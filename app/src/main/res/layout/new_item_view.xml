@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:background="@color/cardview_light_background"
   android:layout_margin="8dp">
 
   <LinearLayout
@@ -36,15 +38,10 @@
           android:layout_height="wrap_content"
           android:layout_marginTop="8dp"
           android:gravity="center_vertical"
+          android:textColor="@android:color/darker_gray"
+          tools:text="作者"
           android:textSize="16sp"
           android:textStyle="bold"/>
-
-        <ImageView
-          android:id="@+id/iv_main"
-          android:layout_width="24dp"
-          android:layout_height="24dp"
-          android:layout_alignParentEnd="true"
-          android:layout_alignParentRight="true"/>
 
       </RelativeLayout>
 
@@ -52,6 +49,9 @@
         android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        tools:text="content"
+        android:textSize="18sp"
         android:layout_marginTop="8dp"/>
 
       <TextView
@@ -59,6 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:textColor="@android:color/darker_gray"
         android:gravity="start"/>
 
     </LinearLayout>

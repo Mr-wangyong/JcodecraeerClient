@@ -16,7 +16,8 @@ import kotlinx.android.synthetic.main.new_item_view.view.*
  * Date: 2017/7/4
  * Time: 下午7:22
  */
-class NewListAdapter(var items: List<NewItem>?, var context: Context) : RecyclerView.Adapter<NewItemHolder>() {
+class NewListAdapter(var items: MutableList<NewItem>, var context: Context) : RecyclerView.Adapter<NewItemHolder>() {
+
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -31,37 +32,44 @@ class NewListAdapter(var items: List<NewItem>?, var context: Context) : Recycler
     override
     fun onBindViewHolder(holder: NewItemHolder, position: Int) {
 
-        val item = items?.get(position)
+        val item = items[position]
 
-        Glide.with(context).load(item?.user?.face).asBitmap().into(holder.itemView.avatar)
+        Glide.with(context).load(item.user.face).asBitmap().into(holder.itemView.avatar)
 
-        if (!item?.user?.face.isNullOrEmpty()) {
-            holder.itemView.iv_main.visibility = View.VISIBLE
-        } else {
-            holder.itemView.iv_main.visibility = View.INVISIBLE
-        }
-
-        holder.itemView.tv_author.text = item?.user?.nickname
-        holder.itemView.tv_content.text = item?.title
-        holder.itemView.tv_time.text = item?.pubDate
+        holder.itemView.tv_author.text = item.user.nickname
+        holder.itemView.tv_content.text = item.title
+        holder.itemView.tv_time.text = item.pubDate
+        holder.postion = position
     }
 
     override fun getItemCount(): Int {
-        return items?.size ?: 0
+        return items.size
     }
 
     fun setItemClickListener(listener: OnRecyclerViewOnClickListener) {
         this.mListener = listener
     }
+
+    fun addData(items: List<NewItem>) {
+        val size = this.items.size
+        this.items.addAll(items)
+        val start = if (size > 0) size - 1 else 0
+        if (items.isNotEmpty()) {
+            notifyItemRangeChanged(start, items.size)
+        }
+    }
 }
 
-class NewItemHolder(itemView: View, var listener: OnRecyclerViewOnClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class NewItemHolder(itemView: View, var listener: OnRecyclerViewOnClickListener?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    var postion:Int = 0
+
     init {
         itemView.setOnClickListener(this)
     }
 
-    override fun onClick(p0: View?) {
-        listener.OnItemClick(p0!!, layoutPosition)
+    override
+    fun onClick(view: View) {
+        listener?.OnItemClick(view, postion)
     }
 
 }
