@@ -24,24 +24,23 @@ class MainActivity : AppCompatActivity() {
     lateinit var apiManager: APIManager
     lateinit var adapter: NewListAdapter//第一次访问的时候必须是 new 出来一个
     var pageIndex: Int = 0
-    lateinit var recycler:RecyclerView
-    lateinit var refresh:SwipeRefreshLayout
+    lateinit var recycler: RecyclerView
+    lateinit var refresh: SwipeRefreshLayout
 
     override
     fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        verticalLayout{
-            refresh=swipeRefreshLayout {
+        verticalLayout {
+            refresh = swipeRefreshLayout {
                 onRefresh {
                     pageIndex = 0
                     loadData(pageIndex)
                 }
                 isRefreshing = true
-                recycler=recyclerView {
+                recycler = recyclerView {
 
                 }
             }
-
         }
 
         apiManager = APIManager
