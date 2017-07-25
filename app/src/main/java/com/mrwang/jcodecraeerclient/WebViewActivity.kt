@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import com.mrwang.jcodecraeerclient.model.APIManager
 import com.mrwang.jcodecraeerclient.model.NewContent
 import org.jetbrains.anko.support.v4.onRefresh
@@ -79,8 +80,12 @@ class WebViewActivity : AppCompatActivity() {
             override
             fun onResponse(call: Call<NewContent>?, response: Response<NewContent>?) {
                 refresh.isRefreshing = false
-                val content = response?.body()?.content!!
-                webView.loadData(content, "text/html; charset=utf-8", "UTF-8")
+                val content = response?.body()?.content
+                if (content!==null){
+                    webView.loadData(content, "text/html; charset=utf-8", "UTF-8")
+                }else{
+                    Toast.makeText(applicationContext,"暂无数据",Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

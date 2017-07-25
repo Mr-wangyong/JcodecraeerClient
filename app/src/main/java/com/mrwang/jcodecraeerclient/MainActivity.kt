@@ -6,12 +6,16 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.marktony.fanfouhandpick.interfaze.OnRecyclerViewOnClickListener
 import com.mrwang.jcodecraeerclient.model.APIManager
 import com.mrwang.jcodecraeerclient.model.NewItem
 import com.mrwang.jcodecraeerclient.model.NewList
 import com.mrwang.jcodecraeerclient.view.NewListAdapter
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
@@ -19,6 +23,7 @@ import org.jetbrains.anko.verticalLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var apiManager: APIManager
@@ -70,6 +75,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null) {
+            when (item.itemId) {
+                R.id.offline -> {
+                    offline()
+                    return true
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
     private fun loadData(page: Int = 0, isRefresh: Boolean = false) {
         apiManager.getNewList(object : Callback<NewList> {
             override fun onFailure(call: Call<NewList>?, t: Throwable?) {
@@ -108,6 +132,40 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }, page)
+    }
+
+    private fun offline() {
+        //想使用协程
+        try {
+            launch(CommonPool) {
+                for (i in 0..50) {
+                    offlineJob(i)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun offlineJob(offlineIndex: Int = 0): Int {
+        try {
+            val execute = apiManager.api.getNewList(offlineIndex).execute()
+            println("Job Done index=$offlineIndex thread=${Thread.currentThread().name}")
+            if (execute.isSuccessful) {
+                val body = execute?.body()
+                if (body !== null) {
+                    for ((id) in body.items) {
+                        apiManager.api.getNewContent(id).execute()
+                    }
+                    return offlineIndex + 1
+                }
+            } else {
+                return offlineIndex + 1
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return offlineIndex + 1
     }
 }
 
